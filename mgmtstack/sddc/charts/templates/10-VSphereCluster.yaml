@@ -1,0 +1,69 @@
+---
+apiVersion: ecs.broadcom.com/v1alpha1
+kind: SDDCVSphereCluster
+metadata:
+  labels:
+    ecs.broadcom.com/sddc: {{ .Values.name }}
+  name: {{ .Values.vSphereCluster.name }}
+  namespace: "{{ .Values.namespace }}"
+spec:
+  vCenterServer:
+    address: "vc-{{ .Values.name }}"
+    vmSize: "{{ .Values.vc.vmSize }}"
+    isoImagePath: "{{ .Values.vc.isoImagePath }}"
+    version: "{{ .Values.vc.version }}"
+    vmName: "{{ .Values.vc.vmName }}"
+  hostVersion: "{{ .Values.hostVersion }}"
+  datacenter:
+    name: "{{ .Values.datacenter.name }}"
+  hostsRef:
+{{- range $index, $hostSpec := .Values.hosts }}
+    - apiVersion: ecs.broadcom.com/v1alpha1
+      kind: SDDCVSphereEsxiHost
+      name: {{ $hostSpec.name }}
+      namespace: "{{ $.Values.namespace }}"
+{{- end }}
+  licensesRef:
+    name: "{{ .Values.licenses.name }}"
+    namespace: "{{ .Values.namespace }}"
+  switchesRef:
+{{- range $name, $switchSpec := .Values.switches }}
+    - apiVersion: ecs.broadcom.com/v1alpha1
+      kind: SDDCVSphereDVSwitch
+      name: {{ $name }}
+      namespace: "{{ $.Values.namespace }}"
+{{- end }}
+  datastoresRef:
+{{- range $name, $spec := .Values.storages }}
+{{- if $spec.required }}
+    - apiVersion: ecs.broadcom.com/v1alpha1
+      kind: SDDCVSphereDatastore
+      name: "{{ $name }}"
+      namespace: "{{ $.Values.namespace }}"
+{{- end }}
+{{- end }}
+  resourcePoolsRef:
+{{- range $name, $spec := .Values.computeResources }}
+    - apiVersion: ecs.broadcom.com/v1alpha1
+      kind: SDDCVSphereResourcePool
+      name: {{ $name }}
+      namespace: "{{ $.Values.namespace }}"
+{{- end }}
+  vmFolders:
+{{- range $name, $spec := .Values.vmFolders }}
+    - name: {{ $name }}
+{{- end }}
+  ntpServers: {{ $.Values.ntpServers }}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ .Values.licenses.name }}"
+  namespace: "{{ .Values.namespace }}"
+stringData:
+{{- range $key, $val :=  .Values.licenses.content }}
+  {{- $key | nindent 2 }}: {{ $val }}
+{{- end }}
+
+---

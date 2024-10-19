@@ -1,0 +1,29 @@
+{{- range $index, $hostSpec := .Values.hosts }}
+---
+apiVersion: ecs.broadcom.com/v1alpha1
+kind: SDDCVSphereEsxiHost
+metadata:
+  labels:
+    ecs.broadcom.com/sddc: {{ $.Values.name }}
+    ecs.broadcom.com/edge-cluster: {{ $.Values.vSphereCluster.name }}
+  name: "{{ $hostSpec.name }}"
+  namespace: "{{ $.Values.namespace }}"
+spec:
+  role: {{ $hostSpec.role }}
+  identityCert: {{ $hostSpec.identityCert }}
+
+---
+# Temporary till cert approach is finalized.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ $hostSpec.name }}-creds"
+  namespace: "{{ $.Values.namespace }}"
+stringData:
+  username: {{ $hostSpec.username }}
+  password: {{ $hostSpec.password | quote }}
+{{- end }}
+
+---
+
+
