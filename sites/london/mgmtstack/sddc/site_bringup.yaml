@@ -56,7 +56,7 @@ data:
   ip: "10.211.210.180"
   dnsServers: "192.19.189.10"
   prefix: "25"
-  gateway: "10.167.80.1"
+  gateway: "10.211.210.129"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
