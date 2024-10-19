@@ -37,6 +37,10 @@ data:
       isoImagePath: "[datastore1] VMware-VCSA-all-8.0.3-24322831.iso"
 
     storages:
+      iscsi:
+        required: true
+        type: iscsi
+        iscsi:
       vsandatastore:
         # Optionally you can disable, if you don't need vsan.
         required: false
