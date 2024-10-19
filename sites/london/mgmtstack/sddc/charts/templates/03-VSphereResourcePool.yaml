@@ -1,0 +1,17 @@
+{{- range $name, $spec := .Values.computeResources }}
+---
+apiVersion: ecs.broadcom.com/v1alpha1
+kind: SDDCVSphereResourcePool
+metadata:
+  labels:
+    ecs.broadcom.com/sddc: {{ $.Values.name }}
+    ecs.broadcom.com/edge-cluster: {{ $.Values.vSphereCluster.name }}
+  name: "{{ $name }}"
+  namespace: "{{ $.Values.namespace }}"
+spec:
+{{- if $spec }}
+{{ $spec | toYaml | nindent 2 }}
+{{- end }}
+{{- end }}
+
+---
