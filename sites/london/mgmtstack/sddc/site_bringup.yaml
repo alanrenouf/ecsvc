@@ -32,6 +32,16 @@ data:
 
     ntpServers:
       - ntp1.eng.vmware.com
+    
+    vc:
+      isoImagePath: "[datastore1] VMware-VCSA-all-8.0.3-24322831.iso"
+
+    storages:
+      vsandatastore:
+        # Optionally you can disable, if you don't need vsan.
+        required: false
+        type: vsan
+        vsan:
 ---
 kind: ConfigMap
 apiVersion: v1
